@@ -1,0 +1,108 @@
+# https://github.com/kubernetes-sigs/kustomize/blob/master/examples/transformerconfigs/README.md
+
+# https://gist.github.com/jamcole/bb741d920c1203180bdc26b07619eba8
+
+commonLabels:
+    # set labels at metadata.labels for all types
+    - path: metadata/labels
+      # create metadata.labels if it doesn't exist
+      create: true
+    - path: spec/template/metadata/labels
+      kind: DeploymentConfig
+      create: true
+    - path: spec/selector
+      kind: DeploymentConfig
+      create: true
+
+commonAnnotations:
+    # set annotations at metadata.annotations for all types
+    - path: metadata/annotations
+      # create metadata.annotations if it doesn't exist
+      create: true
+    - path: spec/template/metadata/annotations
+      kind: DeploymentConfig
+      create: true
+
+varReference:
+    - path: spec/template/spec/containers/args
+      kind: DeploymentConfig
+    - path: spec/template/spec/containers/command
+      kind: DeploymentConfig
+    - path: spec/template/spec/containers/env/value
+      kind: DeploymentConfig
+    - path: spec/template/spec/containers/volumeMounts/mountPath
+      kind: DeploymentConfig
+    - path: spec/template/spec/initContainers/args
+      kind: DeploymentConfig
+    - path: spec/template/spec/initContainers/command
+      kind: DeploymentConfig
+    - path: spec/template/spec/initContainers/env/value
+      kind: DeploymentConfig
+    - path: spec/template/spec/initContainers/volumeMounts/mountPath
+      kind: DeploymentConfig
+
+images:
+    - path: spec/tags/from/name
+      kind: ImageStream
+    - path: spec/output/to/name
+      kind: BuildConfig
+    - path: spec/template/spec/containers/image
+      kind: DeploymentConfig
+    - path: spec/template/spec/initContainers/image
+      kind: DeploymentConfig
+    - path: spec/triggers/imageChangeParams/from/name
+      kind: DeploymentConfig
+
+nameReference:
+    - kind: Service
+      fieldSpecs:
+          - path: spec/to/name
+            kind: Route
+    - kind: ServiceAccount
+      fieldSpecs:
+          - path: subjects/name
+            kind: RoleBinding
+          - path: spec/template/spec/serviceAccountName
+            kind: ServiceAccount
+    - kind: Secret
+      fieldSpecs:
+          - path: spec/template/spec/containers/envFrom/secretRef/name
+            kind: DeploymentConfig
+          - path: spec/template/spec/imagePullSecrets/name
+            kind: DeploymentConfig
+          - path: spec/template/spec/containers/envFrom/secretRef/name
+            kind: DeploymentConfig
+          - path: spec/template/spec/volumes/secret/name
+            kind: DeploymentConfig
+          - path: spec/output/pushSecret/name
+            kind: BuildConfig
+          - path: spec/source/images/pullSecret
+            kind: BuildConfig
+          - path: spec/strategy/customStrategy/pullSecret/name
+            kind: BuildConfig
+          - path: spec/strategy/customStrategy/secrets/secretSource/name
+            kind: BuildConfig
+          - path: spec/strategy/sourceStrategy/pullSecret/name
+            kind: BuildConfig
+          - path: spec/strategy/dockerStrategy/pullSecret/name
+            kind: BuildConfig
+          - path: spec/source/sourceSecret/name
+            kind: BuildConfig
+    - kind: DeploymentConfig
+      fieldSpecs:
+          - path: spec/selector/deploymentconfig
+            kind: Service
+          - path: spec/selector/deploymentconfig
+            kind: DeploymentConfig
+          - path: spec/template/metadata/labels/deploymentconfig
+            kind: DeploymentConfig
+    - kind: ConfigMap
+      fieldSpecs:
+          - path: spec/template/spec/containers/envFrom/configMapRef/name
+            kind: DeploymentConfig
+          - path: spec/template/spec/volumes/configMap/name
+            kind: DeploymentConfig
+    - kind: PersistentVolumeClaim
+      fieldSpecs:
+          - path: spec/template/spec/volumes/persistentVolumeClaim/claimName
+            kind: DeploymentConfig
